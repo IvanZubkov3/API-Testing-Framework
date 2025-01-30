@@ -1,0 +1,40 @@
+name: API Testing with Allure Reports
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install pytest requests allure-pytest
+
+      - name: Run API Tests with Allure
+        run: |
+          source venv/bin/activate
+          pytest --alluredir=reports/
+
+      - name: Upload Allure Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: reports/
